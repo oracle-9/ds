@@ -11,11 +11,11 @@ public class Bank {
         }
 
         public int balance() {
-            return balance;
+            return this.balance;
         }
 
         public void deposit(final int value) {
-            balance += value;
+            this.balance += value;
         }
     }
 }
