@@ -1,4 +1,4 @@
-public class Bank {
+public final class Bank {
     private Bank() {}
 
     public static class Account {
