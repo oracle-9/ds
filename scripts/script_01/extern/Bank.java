@@ -1,4 +1,6 @@
 public class Bank {
+    private Bank() {}
+
     public static class Account {
         private int balance;
 
