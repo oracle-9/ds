@@ -2,15 +2,15 @@ class Bank {
     private static class Account {
         private int balance;
 
-        Account(final int balance) {
+        private Account(final int balance) {
             this.balance = balance;
         }
 
-        int balance() {
+        public int balance() {
             return balance;
         }
 
-        boolean deposit(final int value) {
+        public boolean deposit(final int value) {
             balance += value;
             return true;
         }
@@ -22,7 +22,7 @@ class Bank {
         return savings.balance();
     }
 
-    boolean deposit(final int value) {
+    public boolean deposit(final int value) {
         return savings.deposit(value);
     }
 }
