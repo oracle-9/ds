@@ -2,7 +2,7 @@ class Bank {
     private static class Account {
         private int balance;
 
-        Account(int balance) {
+        Account(final int balance) {
             this.balance = balance;
         }
 
@@ -10,7 +10,7 @@ class Bank {
             return balance;
         }
 
-        boolean deposit(int value) {
+        boolean deposit(final int value) {
             balance += value;
             return true;
         }
@@ -22,7 +22,7 @@ class Bank {
         return savings.balance();
     }
 
-    boolean deposit(int value) {
+    boolean deposit(final int value) {
         return savings.deposit(value);
     }
 }
