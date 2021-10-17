@@ -6,13 +6,16 @@ public class Bank {
             this.balance = balance;
         }
 
+        public static Account withBalance(final int balance) {
+            return new Account(balance);
+        }
+
         public int balance() {
             return balance;
         }
 
-        public boolean deposit(final int value) {
+        public void deposit(final int value) {
             balance += value;
-            return true;
         }
     }
 
@@ -22,7 +25,7 @@ public class Bank {
         return savings.balance();
     }
 
-    public boolean deposit(final int value) {
-        return savings.deposit(value);
+    public void deposit(final int value) {
+        savings.deposit(value);
     }
 }
