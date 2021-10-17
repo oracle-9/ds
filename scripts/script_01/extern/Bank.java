@@ -1,4 +1,4 @@
-class Bank {
+public class Bank {
     private static class Account {
         private int balance;
 
