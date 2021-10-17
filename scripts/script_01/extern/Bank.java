@@ -1,3 +1,5 @@
+package extern;
+
 public final class Bank {
     private Bank() {}
 
