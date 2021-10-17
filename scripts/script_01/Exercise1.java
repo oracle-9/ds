@@ -1,8 +1,8 @@
-import extern.Increment;
+import static java.lang.System.out;
 
 import java.util.ArrayList;
 
-import static java.lang.System.out;
+import extern.Increment;
 
 public final class Exercise1 {
     public static void main(String... args) {
@@ -23,6 +23,7 @@ public final class Exercise1 {
                 thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                System.exit(1);
             }
         }
 
