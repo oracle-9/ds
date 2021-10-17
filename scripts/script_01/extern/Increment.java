@@ -1,7 +1,8 @@
 final class Increment implements Runnable {
     public void run() {
-        final long I = 100;
-        for (long i = 0; i < I; i++)
+        final var N = 100;
+        for (var i = 0; i < N; i++) {
             System.out.println(i);
+        }
     }
 }
