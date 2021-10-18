@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import static java.lang.System.out;
 
 public final class Exercise2 {
-    public static void main(String... args) {
+    public static void main(final String... args) {
         final var N_THREADS = 10;
         final var N_DEPOSITS = 1000;
         final var DEPOSIT_VALUE = 100;

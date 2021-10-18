@@ -1,11 +1,11 @@
-import static java.lang.System.out;
+import extern.Increment;
 
 import java.util.ArrayList;
 
-import extern.Increment;
+import static java.lang.System.out;
 
 public final class Exercise1 {
-    public static void main(String... args) {
+    public static void main(final String... args) {
         final var N_THREADS = 10;
         final var payload = new Increment();
 

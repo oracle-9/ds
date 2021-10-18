@@ -1,12 +1,12 @@
-import static java.lang.System.out;
+import extern.Bank;
 
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
-import extern.Bank;
+import static java.lang.System.out;
 
 public final class Exercise3 {
-    public static void main(String... args) {
+    public static void main(final String... args) {
         final var N_THREADS = 10;
         final var N_DEPOSITS = 1000;
         final var DEPOSIT_VALUE = 100;
