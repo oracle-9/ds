@@ -78,11 +78,12 @@ public final class Bank {
 
     public int balanceOf(final int accountId) {
         return switch (this.version) {
-        case ORIGINAL, EXERCISE_3 -> this.getAccountOrThrow(accountId).balance;
+        case ORIGINAL, EXERCISE_3 ->
+            this.getAccountOrThrow(accountId).balance();
         default -> {
             this.lock.lock();
             try {
-                yield this.getAccountOrThrow(accountId).balance;
+                yield this.getAccountOrThrow(accountId).balance();
             } finally {
                 this.lock.unlock();
             }
