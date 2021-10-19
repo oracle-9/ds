@@ -1,10 +1,9 @@
 package extern;
 
-import extern.Bank.Version;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 
 import static java.lang.System.out;
 
@@ -62,32 +61,25 @@ public final class Test {
     }
 
     public static void main(final String... args) {
-        out.println("Lockless implementation results:");
-        final var t1Start = Instant.now();
-        test(Version.ORIGINAL);
-        final var t1End = Instant.now();
+        final var runTest = (BiConsumer<Bank.Version, String>)
+        (version, message) -> {
+            out.println(message);
+            final var ti = Instant.now();
+            test(version);
+            final var tf = Instant.now();
+            out.println(
+                "elapsed: %dms%n".formatted(Duration.between(ti, tf).toMillis())
+            );
+        };
 
-        out.println("\nBank-wide lock implementation results:");
-        final var t2Start = Instant.now();
-        test(Version.EXERCISE_2);
-        final var t2End = Instant.now();
-
-        out.println("\nAccount-wide lock implementation results");
-        final var t3Start = Instant.now();
-        test(Version.EXERCISE_3);
-        final var t3End = Instant.now();
-
-        final var t1Elapsed = Duration.between(t1Start, t1End).toMillis();
-        final var t2Elapsed = Duration.between(t2Start, t2End).toMillis();
-        final var t3Elapsed = Duration.between(t3Start, t3End).toMillis();
-
-        out.println("""
-
-            Lockless implementation elapsed time:          %dms
-            Bank-wide lock implementation elapsed time:    %dms
-            Account-wide lock implementation elapsed time: %dms"""
-            .formatted(t1Elapsed, t2Elapsed, t3Elapsed)
+        runTest.accept(
+            Bank.Version.ORIGINAL, "Lockless implementation results:"
         );
-
+        runTest.accept(
+            Bank.Version.EXERCISE_2, "Bank-wide lock implementation results:"
+        );
+        runTest.accept(
+            Bank.Version.EXERCISE_3, "Account-wide lock implementation results:"
+        );
     }
 }
