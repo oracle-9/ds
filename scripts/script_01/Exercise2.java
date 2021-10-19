@@ -35,10 +35,10 @@ public final class Exercise2 {
             }
         }
 
-        out.print("""
+        out.println("""
             Expected savings: %d
-            Actual savings:   %d
-            """.formatted(EXPECTED_SAVINGS, savings.balance())
+            Actual savings:   %d"""
+            .formatted(EXPECTED_SAVINGS, savings.balance())
         );
     }
 }
