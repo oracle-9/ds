@@ -22,10 +22,13 @@ public final class Exercise3 {
         for (var i = 0; i < 10; ++i) {
             final var thread = new Thread(() -> {
                 savingsLock.lock();
-                for (var j = 0; j < N_DEPOSITS; ++j) {
-                    savings.deposit(DEPOSIT_VALUE);
+                try {
+                    for (var j = 0; j < N_DEPOSITS; ++j) {
+                        savings.deposit(DEPOSIT_VALUE);
+                    }
+                } finally {
+                    savingsLock.unlock();
                 }
-                savingsLock.unlock();
             });
             thread.start();
             pool.add(thread);

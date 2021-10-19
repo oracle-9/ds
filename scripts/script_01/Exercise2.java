@@ -1,8 +1,8 @@
-import static java.lang.System.out;
+import extern.Bank;
 
 import java.util.ArrayList;
 
-import extern.Bank;
+import static java.lang.System.out;
 
 public final class Exercise2 {
     public static void main(final String... args) {
