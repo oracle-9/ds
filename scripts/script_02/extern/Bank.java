@@ -87,7 +87,7 @@ public final class Bank {
             } finally {
                 this.lock.unlock();
             }
-            }
+        }
         };
     }
 
