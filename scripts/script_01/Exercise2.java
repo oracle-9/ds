@@ -1,8 +1,8 @@
-import extern.Bank;
+import static java.lang.System.out;
 
 import java.util.ArrayList;
 
-import static java.lang.System.out;
+import extern.Bank;
 
 public final class Exercise2 {
     public static void main(final String... args) {
@@ -16,7 +16,7 @@ public final class Exercise2 {
         final var pool = new ArrayList<Thread>();
         pool.ensureCapacity(N_THREADS);
 
-        for (var i = 0; i < 10; ++i) {
+        for (var i = 0; i < N_THREADS; ++i) {
             final var thread = new Thread(() -> {
                 for (var j = 0; j < N_DEPOSITS; ++j) {
                     savings.deposit(DEPOSIT_VALUE);
