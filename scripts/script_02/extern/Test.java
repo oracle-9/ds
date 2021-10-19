@@ -12,11 +12,13 @@ public final class Test {
     private static void test(final Bank.Version version) {
         final var N_THREADS = 2;
         final var N_ACCOUNTS = 10;
+        final var N_TRANSFERS = 100000;
         final var DEPOSIT_VALUE = 1000;
+        final var TRANSFER_VALUE = 1;
 
         final var bank = new Bank.Builder()
             .withVersion(version)
-            .setUpAccounts(10)
+            .setUpAccounts(N_ACCOUNTS)
             .build();
 
         for (var i = 0; i < N_ACCOUNTS; ++i) {
@@ -32,8 +34,6 @@ public final class Test {
 
         for (var i = 0; i < N_THREADS; ++i) {
             final var thread = new Thread(() -> {
-                final var N_TRANSFERS = 100000;
-                final var TRANSFER_VALUE = 1;
                 final var transactionEnds = bank.getRandomAccounts(2).toArray();
                 for (var m = 0; m < N_TRANSFERS; ++m) {
                     bank.transfer(
