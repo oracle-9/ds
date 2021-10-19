@@ -35,7 +35,7 @@ public final class Test {
         for (var i = 0; i < N_THREADS; ++i) {
             final var thread = new Thread(() -> {
                 final var transactionEnds = bank.getRandomAccounts(2).toArray();
-                for (var m = 0; m < N_TRANSFERS; ++m) {
+                for (var j = 0; j < N_TRANSFERS; ++j) {
                     bank.transfer(
                         transactionEnds[0],
                         transactionEnds[1],
