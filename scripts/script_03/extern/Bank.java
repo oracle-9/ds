@@ -1,88 +1,100 @@
-import java.util.*;
+package extern;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 class Bank {
+    private final Map<Integer, Account> accounts;
+
+    private Bank() {
+        this.accounts = new HashMap<>();
+    }
+
+    private Account getAccountOrThrow(final int accountId) {
+        final var account = this.accounts.get(accountId);
+        if (account == null) {
+            throw new RuntimeException("no such account");
+        }
+        return account;
+    }
+
+    public int createAccount() {
+        final var account = new Account();
+        final var accountId = this.accounts.size();
+        this.accounts.put(accountId, account);
+        return accountId;
+    }
+
+    public void closeAccount(final int accountId) {
+        this.accounts.remove(accountId);
+    }
+
+    public int balance(final int accountId) {
+        return this.getAccountOrThrow(accountId).balance();
+    }
+
+    public void deposit(final int accountId, final int value) {
+        this.getAccountOrThrow(accountId).deposit(value);
+    }
+
+    public void withdraw(final int accountId, final int value) {
+        this.getAccountOrThrow(accountId).withdraw(value);
+    }
+
+    public void transfer(
+        final int srcAccountId,
+        final int destAccountId,
+        final int value
+    ) {
+        final var srcAccount = this.getAccountOrThrow(srcAccountId);
+        srcAccount.withdraw(value);
+        try {
+            this.getAccountOrThrow(destAccountId).deposit(value);
+        } catch (final RuntimeException e) {
+            srcAccount.deposit(value);
+        }
+    }
+
+    public int totalBalance() {
+        return this.accounts
+            .values()
+            .stream()
+            .mapToInt(Account::balance)
+            .sum();
+    }
+
+    public int totalBalanceOf(final IntStream accountIds) {
+        return accountIds
+            .map(id -> this.accounts.get(id).balance())
+            .sum();
+    }
 
     private static class Account {
         private int balance;
-        Account(int balance) { this.balance = balance; }
-        int balance() { return balance; }
-        boolean deposit(int value) {
-            balance += value;
-            return true;
+
+        private Account() {
+            this.balance = 0;
         }
-        boolean withdraw(int value) {
-            if (value > balance)
-                return false;
-            balance -= value;
-            return true;
+
+        private int balance() {
+            return this.balance;
+        }
+
+        private void deposit(final int value) {
+            if (this.balance > Integer.MAX_VALUE - value) {
+                throw new RuntimeException(
+                    "value exceeds maximum account balance"
+                );
+            }
+            this.balance += value;
+        }
+
+        private void withdraw(final int value) {
+            if (value > this.balance) {
+                throw new RuntimeException("value exceeds account balance");
+            }
+            this.balance -= value;
         }
     }
-
-    private Map<Integer, Account> map = new HashMap<Integer, Account>();
-    private int nextId = 0;
-
-    // create account and return account id
-    public int createAccount(int balance) {
-        Account c = new Account(balance);
-        int id = nextId;
-        nextId += 1;
-        map.put(id, c);
-        return id;
-    }
-
-    // close account and return balance, or 0 if no such account
-    public int closeAccount(int id) {
-        Account c = map.remove(id);
-        if (c == null)
-            return 0;
-        return c.balance();
-    }
-
-    // account balance; 0 if no such account
-    public int balance(int id) {
-        Account c = map.get(id);
-        if (c == null)
-            return 0;
-        return c.balance();
-    }
-
-    // deposit; fails if no such account
-    public boolean deposit(int id, int value) {
-        Account c = map.get(id);
-        if (c == null)
-            return false;
-        return c.deposit(value);
-    }
-
-    // withdraw; fails if no such account or insufficient balance
-    public boolean withdraw(int id, int value) {
-        Account c = map.get(id);
-        if (c == null)
-            return false;
-        return c.withdraw(value);
-    }
-
-    // transfer value between accounts;
-    // fails if either account does not exist or insufficient balance
-    public boolean transfer(int from, int to, int value) {
-        Account cfrom, cto;
-        cfrom = map.get(from);
-        cto = map.get(to);
-        if (cfrom == null || cto ==  null)
-            return false;
-        return cfrom.withdraw(value) && cto.deposit(value);
-    }
-
-    // sum of balances in set of accounts; 0 if some does not exist
-    public int totalBalance(int[] ids) {
-        int total = 0;
-        for (int i : ids) {
-            Account c = map.get(i);
-            if (c == null)
-                return 0;
-            total += c.balance();
-        }
-        return total;
-  }
-
 }
