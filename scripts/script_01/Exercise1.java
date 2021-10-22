@@ -21,7 +21,7 @@ public final class Exercise1 {
         for (final var thread : pool) {
             try {
                 thread.join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
                 System.exit(1);
             }
