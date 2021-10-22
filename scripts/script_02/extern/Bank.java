@@ -216,7 +216,7 @@ public final class Bank {
             if (value < 0) {
                 throw new RuntimeException("cannot withdraw negative values");
             }
-            if (this.balance < Integer.MIN_VALUE - value) {
+            if (this.balance < Integer.MIN_VALUE + value) {
                 // balance integer underflow.
                 throw new RuntimeException(
                     "value exceeds minimum account balance"
