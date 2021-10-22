@@ -37,7 +37,7 @@ public final class Exercise3 {
         for (final var thread : pool) {
             try {
                 thread.join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
                 System.exit(1);
             }
