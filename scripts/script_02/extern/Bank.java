@@ -55,7 +55,8 @@ public final class Bank {
         public Bank build() {
             final var accounts = new Account[this.nAccounts];
             final var bankWideLock = this.version == Version.EXERCISE_1 ||
-                                     this.version == Version.EXERCISE_2
+                                     this.version == Version.EXERCISE_2 ||
+                                     this.version == Version.EXERCISE_3
                 ? new ReentrantLock()
                 : null;
 
@@ -78,9 +79,8 @@ public final class Bank {
 
     public int balanceOf(final int accountId) {
         return switch (this.version) {
-        case ORIGINAL, EXERCISE_3 ->
-            this.getAccountOrThrow(accountId).balance();
-        default -> {
+        case ORIGINAL -> this.getAccountOrThrow(accountId).balance();
+        case EXERCISE_1, EXERCISE_2 -> {
             this.lock.lock();
             try {
                 yield this.getAccountOrThrow(accountId).balance();
@@ -88,14 +88,22 @@ public final class Bank {
                 this.lock.unlock();
             }
         }
+        case EXERCISE_3 -> {
+            final var account = this.getAccountOrThrow(accountId);
+            account.lock.lock();
+            try {
+                yield account.balance();
+            } finally {
+                account.lock.unlock();
+            }
+        }
         };
     }
 
     public void deposit(final int accountId, final int value) {
         switch (this.version) {
-        case ORIGINAL, EXERCISE_3 ->
-            this.getAccountOrThrow(accountId).deposit(value);
-        default -> {
+        case ORIGINAL -> this.getAccountOrThrow(accountId).deposit(value);
+        case EXERCISE_1, EXERCISE_2 -> {
             this.lock.lock();
             try {
                 this.getAccountOrThrow(accountId).deposit(value);
@@ -103,14 +111,22 @@ public final class Bank {
                 this.lock.unlock();
             }
         }
+        case EXERCISE_3 -> {
+            final var account = this.getAccountOrThrow(accountId);
+            account.lock.lock();
+            try {
+                account.deposit(value);
+            } finally {
+                account.lock.unlock();
+            }
+        }
         }
     }
 
     public void withdraw(final int accountId, final int value) {
         switch (this.version) {
-        case ORIGINAL, EXERCISE_3 ->
-            this.getAccountOrThrow(accountId).withdraw(value);
-        default -> {
+        case ORIGINAL -> this.getAccountOrThrow(accountId).withdraw(value);
+        case EXERCISE_1, EXERCISE_2 -> {
             this.lock.lock();
             try {
                 this.getAccountOrThrow(accountId).withdraw(value);
@@ -118,47 +134,91 @@ public final class Bank {
                 this.lock.unlock();
             }
         }
+        case EXERCISE_3 -> {
+            final var account = this.getAccountOrThrow(accountId);
+            account.lock.lock();
+            try {
+                account.withdraw(value);
+            } finally {
+                account.lock.unlock();
+            }
+        }
         }
     }
 
     public void transfer(
-        final int srcAccount,
-        final int destAccount,
+        final int srcAccountId,
+        final int destAccountId,
         final int value
     ) {
         switch (this.version) {
-        case EXERCISE_2 -> {
+        case ORIGINAL -> {
+            final var srcAccount = this.getAccountOrThrow(srcAccountId);
+            final var destAccount = this.getAccountOrThrow(destAccountId);
+            srcAccount.withdraw(value);
+            try {
+                destAccount.deposit(value);
+            } catch (final RuntimeException e) {
+                srcAccount.deposit(value);
+                throw e;
+            }
+        }
+        case EXERCISE_1, EXERCISE_2 -> {
             this.lock.lock();
-            Account src;
-            Account dest;
+            Account srcAccount;
+            Account destAccount;
 
             try {
-                src = this.getAccountOrThrow(srcAccount);
-                dest = this.getAccountOrThrow(destAccount);
-                src.withdraw(value);
+                srcAccount = this.getAccountOrThrow(destAccountId);
+                destAccount = this.getAccountOrThrow(destAccountId);
+                srcAccount.withdraw(value);
             } catch (final Exception e) {
                 this.lock.unlock();
                 throw e;
             }
 
             try {
-                dest.deposit(value);
+                destAccount.deposit(value);
             } catch (final RuntimeException e) {
-                src.deposit(value); // should never throw.
+                srcAccount.deposit(value); // should never throw.
                 throw e;
             } finally {
                 this.lock.unlock();
             }
         }
-        default -> {
-            final var src = this.getAccountOrThrow(srcAccount);
-            final var dest = this.getAccountOrThrow(destAccount);
-            src.withdraw(value);
+        case EXERCISE_3 -> {
+            this.lock.lock();
+            Account srcAccount;
+            Account destAccount;
+
             try {
-                dest.deposit(value);
-            } catch (final RuntimeException e) {
-                src.deposit(value); // should never throw.
+                srcAccount = this.getAccountOrThrow(srcAccountId);
+                destAccount = this.getAccountOrThrow(destAccountId);
+            } catch (final Exception e) {
+                this.lock.unlock();
                 throw e;
+            }
+
+            srcAccount.lock.lock();
+            destAccount.lock.lock();
+            this.lock.unlock();
+
+            try {
+                srcAccount.withdraw(value);
+            } catch (final RuntimeException e) {
+                srcAccount.lock.unlock();
+                destAccount.lock.unlock();
+                throw e;
+            }
+
+            try {
+                destAccount.deposit(value);
+            } catch (final RuntimeException e) {
+                srcAccount.deposit(value); // should never throw.
+                throw e;
+            } finally {
+                srcAccount.lock.unlock();
+                destAccount.lock.unlock();
             }
         }
         }
@@ -166,6 +226,8 @@ public final class Bank {
 
     public int totalBalance() {
         return switch (this.version) {
+        case ORIGINAL, EXERCISE_1 ->
+            Arrays.stream(this.accounts).mapToInt(Account::balance).sum();
         case EXERCISE_2 -> {
             this.lock.lock();
             try {
@@ -177,8 +239,28 @@ public final class Bank {
                 this.lock.unlock();
             }
         }
-        default ->
-            Arrays.stream(this.accounts).mapToInt(Account::balance).sum();
+        case EXERCISE_3 -> {
+            // In this case we only lock the bank and each account for as long
+            // as needed. The downside is we need to iterate the accounts twice.
+            // Alternatively, we could just lock the entire bank and iterate
+            // once, just like in EXERCISE_2, but we wouldn't be taking
+            // advantage of account-specific locking.
+            this.lock.lock();
+            for (final var account : this.accounts) {
+                account.lock.lock();
+            }
+            this.lock.unlock();
+            var sum = 0;
+            for (final var account : this.accounts) {
+                // account.balance() doesn't throw, so no try/finally block is
+                // required. If it were to throw, we'd need a finally block
+                // where we iterate over the rest of the accounts whose balance
+                // hasn't been taken (including this one) and unlock it.
+                sum += account.balance();
+                account.lock.unlock();
+            }
+            yield sum;
+        }
         };
     }
 
