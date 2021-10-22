@@ -200,43 +200,29 @@ public final class Bank {
         }
 
         private void deposit(final int value) {
-            final var work = (Runnable) () -> {
-                if (this.balance > Integer.MAX_VALUE - value) {
-                    throw new RuntimeException(
-                        "value exceeds maximum account balance"
-                    );
-                }
-                this.balance += value;
-            };
-            if (Bank.this.version == Version.EXERCISE_3) {
-                this.lock.lock();
-                try {
-                    work.run();
-                } finally {
-                    this.lock.unlock();
-                }
-            } else {
-                work.run();
+            if (value < 0) {
+                throw new RuntimeException("cannot deposit negative values");
             }
+            if (this.balance > Integer.MAX_VALUE - value) {
+                // balance integer overflow.
+                throw new RuntimeException(
+                    "value exceeds maximum account balance"
+                );
+            }
+            this.balance += value;
         }
 
         private void withdraw(final int value) {
-            final var work = (Runnable) () -> {
-                if (value > this.balance) {
-                    throw new RuntimeException("value exceeds account balance");
-                }
-                this.balance -= value;
-            };
-            if (Bank.this.version == Version.EXERCISE_3) {
-                this.lock.lock();
-                try {
-                    work.run();
-                } finally {
-                    this.lock.unlock();
-                }
-            } else {
-                work.run();
+            if (value < 0) {
+                throw new RuntimeException("cannot withdraw negative values");
             }
+            if (this.balance < Integer.MIN_VALUE - value) {
+                // balance integer underflow.
+                throw new RuntimeException(
+                    "value exceeds minimum account balance"
+                );
+            }
+            this.balance -= value;
         }
     }
 }

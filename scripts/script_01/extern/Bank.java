@@ -19,6 +19,15 @@ public final class Bank {
         }
 
         public void deposit(final int value) {
+            if (value < 0) {
+                throw new RuntimeException("cannot deposit negative values");
+            }
+            if (this.balance > Integer.MAX_VALUE - value) {
+                // balance integer overflow.
+                throw new RuntimeException(
+                    "value exceeds maximum account balance"
+                );
+            }
             this.balance += value;
         }
     }
