@@ -77,7 +77,7 @@ public final class Bank {
         }
     }
 
-    public int balanceOf(final int accountId) {
+    public int balance(final int accountId) {
         return switch (this.version) {
         case ORIGINAL -> this.getAccountOrThrow(accountId).balance();
         case EXERCISE_1, EXERCISE_2 -> {
@@ -89,8 +89,16 @@ public final class Bank {
             }
         }
         case EXERCISE_3 -> {
-            final var account = this.getAccountOrThrow(accountId);
+            this.lock.lock();
+            Account account;
+            try {
+                account = this.getAccountOrThrow(accountId);
+            } catch (final RuntimeException e) {
+                this.lock.unlock();
+                throw e;
+            }
             account.lock.lock();
+            this.lock.unlock();
             try {
                 yield account.balance();
             } finally {
@@ -112,8 +120,16 @@ public final class Bank {
             }
         }
         case EXERCISE_3 -> {
-            final var account = this.getAccountOrThrow(accountId);
+            this.lock.lock();
+            Account account;
+            try {
+                account = this.getAccountOrThrow(accountId);
+            } catch (final RuntimeException e) {
+                this.lock.unlock();
+                throw e;
+            }
             account.lock.lock();
+            this.lock.unlock();
             try {
                 account.deposit(value);
             } finally {
@@ -135,8 +151,16 @@ public final class Bank {
             }
         }
         case EXERCISE_3 -> {
-            final var account = this.getAccountOrThrow(accountId);
+            this.lock.lock();
+            Account account;
+            try {
+                account = this.getAccountOrThrow(accountId);
+            } catch (final RuntimeException e) {
+                this.lock.unlock();
+                throw e;
+            }
             account.lock.lock();
+            this.lock.unlock();
             try {
                 account.withdraw(value);
             } finally {
