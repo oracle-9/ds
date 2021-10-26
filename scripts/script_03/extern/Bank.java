@@ -161,11 +161,12 @@ public class Bank {
             try {
                 account = this.getAccountOrThrow(accountId);
             } catch (final RuntimeException e) {
-                // We need to unlock every valid used up until this point before
+                // We need to unlock every valid user up until this point before
                 // we propagate the error.
                 for (final var lockedAccount : accounts) {
                     lockedAccount.lock.unlock();
                 }
+                this.lock.unlock();
                 throw e;
             }
             accounts.add(account);
