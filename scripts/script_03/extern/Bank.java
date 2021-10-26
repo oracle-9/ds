@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
-class Bank {
+public class Bank {
     private final Map<Integer, Account> accounts;
     private ReentrantLock lock;
 
-    private Bank() {
+    public Bank() {
         this.accounts = new HashMap<>();
         this.lock = new ReentrantLock();
     }
