@@ -58,7 +58,7 @@ public class Bank {
         try {
             return account.balance();
         } finally {
-            this.lock.unlock();
+            account.lock.unlock();
         }
     }
 
@@ -76,7 +76,7 @@ public class Bank {
         try {
             account.deposit(value);
         } finally {
-            this.lock.unlock();
+            account.lock.unlock();
         }
     }
 
@@ -94,7 +94,7 @@ public class Bank {
         try {
             account.withdraw(value);
         } finally {
-            this.lock.unlock();
+            account.lock.unlock();
         }
     }
 
