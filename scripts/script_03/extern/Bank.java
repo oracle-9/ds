@@ -34,13 +34,21 @@ public class Bank {
     }
 
     public int closeAccount(final int accountId) {
+        Account account;
         this.lock.lock();
         try {
-            final var balance = getAccountOrThrow(accountId).balance();
-            this.accounts.remove(accountId);
-            return balance;
-        } finally {
+            account = this.getAccountOrThrow(accountId);
+        } catch (final RuntimeException e) {
             this.lock.unlock();
+            throw e;
+        }
+        this.accounts.remove(accountId);
+        account.lock.lock();
+        this.lock.unlock();
+        try {
+            return account.balance();
+        } finally  {
+            account.lock.unlock();
         }
     }
 
