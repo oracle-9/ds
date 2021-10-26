@@ -33,10 +33,12 @@ public class Bank {
         }
     }
 
-    public void closeAccount(final int accountId) {
+    public int closeAccount(final int accountId) {
         this.lock.lock();
         try {
+            final var balance = getAccountOrThrow(accountId).balance();
             this.accounts.remove(accountId);
+            return balance;
         } finally {
             this.lock.unlock();
         }
