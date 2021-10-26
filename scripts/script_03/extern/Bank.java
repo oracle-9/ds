@@ -45,8 +45,8 @@ public class Bank {
     }
 
     public int balance(final int accountId) {
-        this.lock.lock();
         Account account;
+        this.lock.lock();
         try {
             account = this.getAccountOrThrow(accountId);
         } catch (RuntimeException e) {
@@ -63,8 +63,8 @@ public class Bank {
     }
 
     public void deposit(final int accountId, final int value) {
-        this.lock.lock();
         Account account;
+        this.lock.lock();
         try {
             account = this.getAccountOrThrow(accountId);
         } catch (RuntimeException e) {
@@ -81,8 +81,8 @@ public class Bank {
     }
 
     public void withdraw(final int accountId, final int value) {
-        this.lock.lock();
         Account account;
+        this.lock.lock();
         try {
             account = this.getAccountOrThrow(accountId);
         } catch (RuntimeException e) {
@@ -103,9 +103,9 @@ public class Bank {
         final int destAccountId,
         final int value
     ) {
-        this.lock.lock();
         Account srcAccount;
         Account destAccount;
+        this.lock.lock();
 
         try {
             srcAccount = this.getAccountOrThrow(srcAccountId);
@@ -153,9 +153,9 @@ public class Bank {
     }
 
     public int totalBalanceOf(final int... accountIds) {
-        this.lock.lock();
         final var accounts = new ArrayList<Account>();
         accounts.ensureCapacity(accountIds.length);
+        this.lock.lock();
         for (final var accountId : accountIds) {
             Account account;
             try {
