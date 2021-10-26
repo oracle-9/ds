@@ -186,6 +186,7 @@ public class Bank {
 
         private Account() {
             this.balance = 0;
+            this.lock = new ReentrantLock();
         }
 
         private int balance() {
