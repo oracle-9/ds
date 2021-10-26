@@ -139,6 +139,7 @@ public class Bank {
             destAccount.deposit(value);
         } catch (final RuntimeException e) {
             srcAccount.deposit(value);
+            throw e;
         } finally {
             srcAccount.lock.unlock();
             destAccount.lock.unlock();
