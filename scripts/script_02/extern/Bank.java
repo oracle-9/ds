@@ -89,8 +89,8 @@ public final class Bank {
             }
         }
         case EXERCISE_3 -> {
-            this.lock.lock();
             Account account;
+            this.lock.lock();
             try {
                 account = this.getAccountOrThrow(accountId);
             } catch (final RuntimeException e) {
@@ -120,8 +120,8 @@ public final class Bank {
             }
         }
         case EXERCISE_3 -> {
-            this.lock.lock();
             Account account;
+            this.lock.lock();
             try {
                 account = this.getAccountOrThrow(accountId);
             } catch (final RuntimeException e) {
@@ -151,8 +151,8 @@ public final class Bank {
             }
         }
         case EXERCISE_3 -> {
-            this.lock.lock();
             Account account;
+            this.lock.lock();
             try {
                 account = this.getAccountOrThrow(accountId);
             } catch (final RuntimeException e) {
@@ -188,9 +188,9 @@ public final class Bank {
             }
         }
         case EXERCISE_1, EXERCISE_2 -> {
-            this.lock.lock();
             Account srcAccount;
             Account destAccount;
+            this.lock.lock();
 
             try {
                 srcAccount = this.getAccountOrThrow(destAccountId);
@@ -211,9 +211,9 @@ public final class Bank {
             }
         }
         case EXERCISE_3 -> {
-            this.lock.lock();
             Account srcAccount;
             Account destAccount;
+            this.lock.lock();
 
             try {
                 srcAccount = this.getAccountOrThrow(srcAccountId);
